@@ -26,23 +26,23 @@
 Десерт Чизкейк
 */
 
-const Cooks = new Map([
-  ["Пицца", "Олег"],
-  ["Суши", "Андрей"],
-  ["Десерт", "Анна"],
+const cookingScedule = new Map([
+  ["Пицца", "Виктор"],
+  ["Суши", "Ольга"],
+  ["Десерт", "Дмитрий"],
 ]);
 
-const menubar = new Map([
+
+const menu = new Map([
   ["Пицца", new Set(["Маргарита", "Пепперони", "Три сыра"])],
   ["Суши", new Set(["Филадельфия", "Калифорния", "Чизмаки", "Сеякемаки"])],
-  ["Десерты", new Set(["Тирамису", "Чизкейк"])],
+  ["Десерт", new Set(["Тирамису", "Чизкейк"])]
 ]);
 
 // Посетитель ресторана.
 class Client {
-  constructor(firstname, lastname) {
-    this.firstname = firstname;
-    this.lastname = lastname;
+  constructor(firstname) {
+      this.firstname = firstname;
   }
 }
 
@@ -51,45 +51,46 @@ class Manager {
   finalOrder = new Map();
   count;
   newOrder(client, ...order) {
-    this.count = 0;
-    order.forEach((item) => {
-      if (menubar.get(item.type).has(item.name)) {
-        this.count++;
-      }
-   });
-    if (this.finalOrder.get(client) === undefined) {
-      if(this.count === order.length) {
-      this.finalOrder.set(client, order);
-    } else {
-      if (this.count === order.length) {
-        this.finalOrder.get(client).push(...order);
-      }
-    }
-    if (this.count === order.length) {
-      console.log(`Клиент ${client.firstname} заказал: `);
-      const arr = formatArray(this.finalOrder.get(client));
-      arr.forEach((item) => {
-        console.log(`${item.name} - ${item.quantity} - готовит повар ${Cooks.get(item.type)}`);
+      this.count = 0
+      order.forEach((element) => {
+          if (menu.get(element.type).has(element.name)) {
+              this.count++;
+          }
       });
-    }
-    }
-  } 
+      if (this.finalOrder.get(client) === undefined) {
+          if (this.count === order.length) {
+              this.finalOrder.set(client, order);
+          }
+      } else {
+          if (this.count === order.length) {
+              this.finalOrder.get(client).push(...order);
+          }
+      }
+      if (this.count === order.length) {
+          console.log(`Клиент ${client.firstname} заказал:`);
+          const arr = formatArray(this.finalOrder.get(client));
+          arr.forEach((e) => {
+              const str = `${e.type} "${e.name}" - ${e.quantity}; готовит повар ${cookingScedule.get(e.type)}`
+              console.log(str);
+          })
+      }
+  }
 }
 
-const formatArray = (arr) => {
+const formatArray = (array) => {
   let str = "";
   let index;
-  for (let i = 0; i < arr.length; i++) {
-    str = arr[i].name;
-    for (let j = 0; j < arr[i].quantity; j++) {
-      if (str === arr[j].name) {
-        arr[i].quantity = arr[i].quantity + arr[j].quantity;
-        index = j;
+  for (let i = 0; i < array.length; i++) {
+      str = array[i].name;
+      for (let j = i + 1; j < array.length; j++) {
+          if (str === array[j].name) {
+              array[i].quantity = array[i].quantity + array[j].quantity;
+              index = j
+          }
       }
-    }
   }
-  delete arr[index];
-  return arr;
+  delete array[index]
+  return array;
 }
 
 // Можно передать внутрь конструктора что-либо, если необходимо.
