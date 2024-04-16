@@ -1,23 +1,67 @@
-"use strict";
+"use strict"
 
-const outputReview = document.querySelector('output__review');
+const outputRewiew = document.querySelector('.output__review');
 
-for (let i = 0; i < localStorage.length; i++) {
-    let product = localStorage.key(i);
-    let reviewList = JSON.parse(localStorage.getItem(product));
+for (let index = 0; index < localStorage.length; index++) {
 
-    const wrapProduct = document.createElement('div');
-    outputReview.insertAdjacentElement('beforeend', wrapProduct);
+    let product = localStorage.key(index);
+    let rewiewList = JSON.parse(localStorage.getItem(product));
 
-    wrapProduct.insertAdjacentHTML('beforeend', `<h2 onclick='showReview(this)' style='cursor: pointer;'>${product}<h2/>`);
-    
-    const wrapReview = document.createElement('div');
-    wrapReview.hidden = true;
-    wrapProduct.insertAdjacentElement('beforeend', wrapReview);
+    const wrapProduct = document.createElement("div");
+    outputRewiew.insertAdjacentElement("beforeend", wrapProduct);
 
-    reviewList.forEach(element => {
-        const reviewItem = document.createElement('div');
-        wrapReview.insertAdjacentElement('beforeend', reviewItem);
+    wrapProduct.insertAdjacentHTML("beforeend", `<h2 onclick="showRewiew(this)" style="cursor: pointer;">${product}</h2>`);
 
-        
+    const wrapRewiews = document.createElement("div");
+    wrapRewiews.hidden = true;
+    wrapProduct.insertAdjacentElement("beforeend", wrapRewiews);
+
+
+    rewiewList.forEach(element => {
+        const rewiewItem = document.createElement("div");
+        wrapRewiews.insertAdjacentElement("beforeend", rewiewItem);
+
+        const rewiewText = document.createElement("span");
+        rewiewText.textContent = element;
+        rewiewItem.insertAdjacentElement("beforeend", rewiewText);
+
+        rewiewItem.insertAdjacentHTML("beforeend", " ");
+
+        rewiewItem.insertAdjacentElement("beforeend",
+            createdButtonDelete(rewiewText, rewiewList, product));
+
+        rewiewItem.insertAdjacentHTML("beforeend", "<br><br>");
+    });
+}
+
+function createdButtonDelete(bRewiewText, bRewiewList, bProduct) {
+
+    const btnDelete = document.createElement("button");
+    btnDelete.textContent = "Удалить";
+
+    btnDelete.addEventListener("click", () => {
+        if (bRewiewList.length > 1) {
+            let indexItem = bRewiewList.findIndex((element) => element === bRewiewText.textContent);
+            bRewiewList.splice(indexItem, 1);
+            localStorage.setItem(bProduct, JSON.stringify(bRewiewList));
+        } else {
+            localStorage.removeItem(bProduct);
+            btnDelete.parentElement.parentElement.parentElement.remove();
+        }
+        bRewiewText.parentElement.remove();
+        btnDelete.remove();
+    });
+
+    return btnDelete;
+}
+
+function showRewiew(elem) {
+    let hiddenElement = elem.parentElement.lastChild;
+    if (hiddenElement.hidden) {
+        hiddenElement.hidden = false;
+        elem.textContent = "скрыть отзывы";
+    } else {
+        hiddenElement.hidden = true;
+        elem.textContent = "показать отзывы";
     }
+}
